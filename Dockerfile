@@ -1,6 +1,6 @@
 FROM golang:1.10-alpine as builder
 
-RUN apk add -U gcc musl-dev
+RUN until apk add -U gcc musl-dev; do sleep 2; done
 
 COPY vendor/ /go/src/github.com/brimstone/blinktd/vendor/
 COPY *.go /go/src/github.com/brimstone/blinktd/
