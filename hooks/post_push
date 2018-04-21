@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+IMAGE_NAME="${IMAGE_NAME:-brimstone/blinktd:latest}"
+
+for GOARCH in amd64 arm; do
+	docker push "${IMAGE_NAME}-$GOARCH"
+done

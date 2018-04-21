@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail
 
 IMAGE_NAME="${IMAGE_NAME:-brimstone/blinktd:latest}"
