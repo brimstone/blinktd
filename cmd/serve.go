@@ -28,8 +28,8 @@ to quickly create a Cobra application.`,
 
 		sysfs.Delay(100)
 
-		r := 0
-		g := 255
+		r := 255
+		g := 0
 		b := 0
 
 		for {
