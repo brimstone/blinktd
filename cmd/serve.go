@@ -19,7 +19,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("serve called")
-		brightness := 0.1
+		brightness := 1.0
 		blinkt := sysfs.NewBlinkt(brightness)
 
 		blinkt.SetClearOnExit(true)
@@ -28,9 +28,9 @@ to quickly create a Cobra application.`,
 
 		sysfs.Delay(100)
 
-		r := 255
+		r := 0
 		g := 0
-		b := 0
+		b := 255
 
 		for {
 			for pixel := 0; pixel < 8; pixel++ {
