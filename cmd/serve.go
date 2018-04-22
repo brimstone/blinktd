@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/brimstone/blinkt_go/sysfs"
+	"github.com/brimstone/blinktd/types"
 	httpd "github.com/brimstone/go-httpd"
 	"github.com/spf13/cobra"
 )
@@ -27,32 +28,14 @@ var morseDigit = [][]int{
 	[]int{0, 0, 0, 0, 1},
 }
 
-type PixelFormat string
-
-var PixelMorse PixelFormat = "morse"
-var PixelSolid PixelFormat = "solid"
-
-type Pixel struct {
-	ID     int         `json:id`
-	Red    int         `json:red`
-	Green  int         `json:green`
-	Blue   int         `json:blue`
-	Format PixelFormat `json:format`
-	Value  int64       `json:value`
-}
-
-var pixels [8]Pixel
+var pixels [8]types.Pixel
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Run the blinktd server",
+	Long: `Run a server that manages the pixels on your Blinktd!
+Use the client or API to change the value of the pixels.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		h, err := httpd.New(httpd.Port(8000))
 		if err != nil {
@@ -66,16 +49,19 @@ to quickly create a Cobra application.`,
 
 		time.Sleep(100 * time.Millisecond)
 		blinkt.Clear()
-		pixels[0] = Pixel{
+		pixels[0] = types.Pixel{
 			Green:  255,
-			Format: PixelMorse,
+			Format: types.PixelMorse,
 			Value:  0,
 		}
 		for id := range pixels {
 			go func(id int) {
 				for {
 					pixel := pixels[id]
-					if pixel.Format == PixelMorse {
+					if pixel.Red == 0 && pixel.Green == 0 && pixel.Blue == 0 {
+						continue
+					}
+					if pixel.Format == types.PixelMorse {
 						morsePixel(pixel.Value, id, pixel.Red, pixel.Green, pixel.Blue)
 					} else {
 						blinkt.SetPixel(id, pixel.Red, pixel.Green, pixel.Blue)
@@ -114,7 +100,7 @@ func handleLed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	var requestPixel Pixel
+	var requestPixel types.Pixel
 	err = json.Unmarshal(body, &requestPixel)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
