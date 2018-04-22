@@ -80,6 +80,7 @@ to quickly create a Cobra application.`,
 					} else {
 						blinkt.SetPixel(id, pixel.Red, pixel.Green, pixel.Blue)
 						blinkt.Show()
+						sysfs.Delay(100)
 					}
 				}
 			}(id)
