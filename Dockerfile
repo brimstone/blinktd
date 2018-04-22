@@ -2,9 +2,7 @@ FROM golang:1.10-alpine as builder
 
 RUN apk add -U gcc musl-dev
 
-COPY vendor/ /go/src/github.com/brimstone/blinktd/vendor/
-COPY *.go /go/src/github.com/brimstone/blinktd/
-COPY cmd/ /go/src/github.com/brimstone/blinktd/cmd/
+COPY . /go/src/github.com/brimstone/blinktd/
 
 WORKDIR /go/src/github.com/brimstone/blinktd/
 
