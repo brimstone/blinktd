@@ -59,6 +59,7 @@ Use the client or API to change the value of the pixels.`,
 				for {
 					pixel := pixels[id]
 					if pixel.Red == 0 && pixel.Green == 0 && pixel.Blue == 0 {
+						time.Sleep(time.Second)
 						continue
 					}
 					if pixel.Format == types.PixelMorse {
