@@ -46,3 +46,6 @@
 [submodule "vendor/gopkg.in/yaml.v2"]
 	path = vendor/gopkg.in/yaml.v2
 	url = https://gopkg.in/yaml.v2
+[submodule "vendor/github.com/brimstone/go-httpd"]
+	path = vendor/github.com/brimstone/go-httpd
+	url = https://github.com/brimstone/go-httpd
