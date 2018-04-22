@@ -9,6 +9,7 @@ import (
 	"github.com/brimstone/blinkt_go/sysfs"
 	"github.com/brimstone/blinktd/types"
 	httpd "github.com/brimstone/go-httpd"
+	"github.com/brimstone/jwt/jwt"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +30,8 @@ var morseDigit = [][]int{
 }
 
 var pixels [8]types.Pixel
+
+var key string
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -92,7 +95,17 @@ func morsePixel(value int64, pixel int, r int, g int, b int) {
 }
 
 func handleLed(w http.ResponseWriter, r *http.Request) {
-	// TODO handle auth
+	authToken := types.AuthToken{}
+	if key != "" {
+		err := jwt.VerifyBearer(key, r, &authToken)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+	} else {
+		// Since there's no key, allow all pixels.
+		authToken.Pixels = []int{0, 1, 2, 3, 4, 5, 6, 7}
+	}
 
 	// Read body
 	body, err := ioutil.ReadAll(r.Body)
@@ -101,26 +114,30 @@ func handleLed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
+
 	var requestPixel types.Pixel
 	err = json.Unmarshal(body, &requestPixel)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
-	pixels[requestPixel.ID] = requestPixel
-	w.Write([]byte("OK"))
+
+	auth := false
+	for _, pixel := range authToken.Pixels {
+		if pixel == requestPixel.ID {
+			auth = true
+			break
+		}
+	}
+
+	if auth {
+		pixels[requestPixel.ID] = requestPixel
+		w.Write([]byte("OK"))
+	}
+	http.Error(w, "Unauthorized", 403)
 }
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serveCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	serveCmd.Flags().StringVarP(&key, "key", "k", "", "Data or path to public key for auth")
 }

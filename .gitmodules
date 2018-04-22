@@ -52,3 +52,12 @@
 [submodule "vendor/github.com/brimstone/blinkt_go"]
 	path = vendor/github.com/brimstone/blinkt_go
 	url = https://github.com/brimstone/blinkt_go
+[submodule "vendor/github.com/brimstone/jwt"]
+	path = vendor/github.com/brimstone/jwt
+	url = https://github.com/brimstone/jwt
+[submodule "vendor/gopkg.in/square/go-jose.v2"]
+	path = vendor/gopkg.in/square/go-jose.v2
+	url = https://gopkg.in/square/go-jose.v2
+[submodule "vendor/golang.org/x/crypto"]
+	path = vendor/golang.org/x/crypto
+	url = https://go.googlesource.com/crypto
