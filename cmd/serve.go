@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var blinkt = sysfs.NewBlinkt(1.0)
-var dotlen = time.Second / 2
+var blinkt = sysfs.NewBlinkt(0.2)
+var dotlen = time.Second / 10
 var status = int64(0)
 
 var morseDigit = [][]int{
@@ -54,15 +54,16 @@ to quickly create a Cobra application.`,
 				for _, dot := range morseDigit[status] {
 					blinkt.SetPixel(0, 0, 255, 0)
 					blinkt.Show()
-					time.Sleep(dotlen)
 					if dot == 0 {
-						time.Sleep(dotlen)
+						time.Sleep(dotlen * 3)
+					} else {
 						time.Sleep(dotlen)
 					}
 					blinkt.SetPixel(0, 0, 0, 0)
 					blinkt.Show()
 					time.Sleep(dotlen)
 				}
+				time.Sleep(dotlen * 3)
 			}
 		}()
 
