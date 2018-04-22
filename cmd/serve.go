@@ -76,7 +76,6 @@ Use the client or API to change the value of the pixels.`,
 		}
 
 		return h.ListenAndServe()
-
 	},
 }
 
