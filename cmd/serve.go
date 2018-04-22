@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexellis/blinkt_go/sysfs"
+	"github.com/brimstone/blinkt_go/sysfs"
 	httpd "github.com/brimstone/go-httpd"
 	"github.com/spf13/cobra"
 )
@@ -64,7 +64,7 @@ to quickly create a Cobra application.`,
 
 		blinkt.Setup()
 
-		sysfs.Delay(100)
+		time.Sleep(100 * time.Millisecond)
 		blinkt.Clear()
 		pixels[0] = Pixel{
 			Green:  255,
@@ -79,8 +79,7 @@ to quickly create a Cobra application.`,
 						morsePixel(pixel.Value, id, pixel.Red, pixel.Green, pixel.Blue)
 					} else {
 						blinkt.SetPixel(id, pixel.Red, pixel.Green, pixel.Blue)
-						blinkt.Show()
-						sysfs.Delay(100)
+						time.Sleep(time.Second)
 					}
 				}
 			}(id)
@@ -94,14 +93,12 @@ to quickly create a Cobra application.`,
 func morsePixel(value int64, pixel int, r int, g int, b int) {
 	for _, dot := range morseDigit[value] {
 		blinkt.SetPixel(pixel, r, g, b)
-		blinkt.Show()
 		if dot == 0 {
 			time.Sleep(dotlen * 3)
 		} else {
 			time.Sleep(dotlen)
 		}
 		blinkt.SetPixel(pixel, 0, 0, 0)
-		blinkt.Show()
 		time.Sleep(dotlen)
 	}
 	time.Sleep(dotlen * 3)
