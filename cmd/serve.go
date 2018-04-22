@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/alexellis/blinkt_go/sysfs"
 	httpd "github.com/brimstone/go-httpd"
@@ -9,6 +10,21 @@ import (
 )
 
 var blinkt = sysfs.NewBlinkt(1.0)
+var dotlen = time.Second / 2
+var status = int64(0)
+
+var morseDigit = [][]int{
+	[]int{0, 0, 0, 0, 0},
+	[]int{1, 0, 0, 0, 0},
+	[]int{1, 1, 0, 0, 0},
+	[]int{1, 1, 1, 0, 0},
+	[]int{1, 1, 1, 1, 0},
+	[]int{1, 1, 1, 1, 1},
+	[]int{0, 1, 1, 1, 1},
+	[]int{0, 0, 1, 1, 1},
+	[]int{0, 0, 0, 1, 1},
+	[]int{0, 0, 0, 0, 1},
+}
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
@@ -33,8 +49,22 @@ to quickly create a Cobra application.`,
 
 		sysfs.Delay(100)
 		blinkt.Clear()
-		blinkt.SetPixel(0, 0, 255, 0)
-		blinkt.Show()
+		go func() {
+			for {
+				for _, dot := range morseDigit[status] {
+					blinkt.SetPixel(0, 0, 255, 0)
+					blinkt.Show()
+					time.Sleep(dotlen)
+					if dot == 0 {
+						time.Sleep(dotlen)
+						time.Sleep(dotlen)
+					}
+					blinkt.SetPixel(0, 0, 0, 0)
+					blinkt.Show()
+					time.Sleep(dotlen)
+				}
+			}
+		}()
 
 		return h.ListenAndServe()
 
@@ -44,7 +74,7 @@ to quickly create a Cobra application.`,
 func handleLed(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("hi"))
 	blinkt.Clear()
-	blinkt.SetPixel(0, 255, 0, 0)
+	blinkt.SetPixel(1, 255, 0, 0)
 	blinkt.Show()
 }
 
