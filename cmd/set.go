@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/brimstone/blinktd/types"
@@ -97,12 +98,27 @@ var setCmd = &cobra.Command{
 			return err
 		}
 		req.Header.Set("Content-Type", "application/json")
+		token, err := cmd.Flags().GetString("token")
+		if err != nil {
+			return err
+		}
+		if token != "" {
+			req.Header.Set("Authorization", "Bearer "+token)
+		}
 
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return err
 		}
 		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+			return errors.New(string(body))
+		}
 
 		return nil
 	},
@@ -120,4 +136,6 @@ func init() {
 	setCmd.Flags().IntP("blue", "b", 0, "Amount of blue, 0-255")
 	setCmd.Flags().BoolP("morse", "m", false, "If morse code should be used to show the value")
 	setCmd.Flags().IntP("value", "v", 0, "Value to show with morse code")
+
+	setCmd.Flags().StringP("token", "t", "", "Token for authorization")
 }

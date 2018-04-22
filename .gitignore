@@ -1,3 +1,4 @@
 /blinkt
 *.swp
 /blinktd
+/*.pem

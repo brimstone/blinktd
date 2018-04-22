@@ -25,7 +25,7 @@ to quickly create a Cobra application.`,
 		var err error
 		key, _ := cmd.Flags().GetString("key")
 		if key == "" {
-			return errors.New("Must specfy a key with -k")
+			return errors.New("Must specify a key with -k")
 		}
 
 		authToken := types.AuthToken{}

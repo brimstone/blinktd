@@ -130,11 +130,12 @@ func handleLed(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if auth {
-		pixels[requestPixel.ID] = requestPixel
-		w.Write([]byte("OK"))
+	if !auth {
+		http.Error(w, "Unauthorized", 403)
+		return
 	}
-	http.Error(w, "Unauthorized", 403)
+	pixels[requestPixel.ID] = requestPixel
+	w.Write([]byte("OK"))
 }
 
 func init() {
