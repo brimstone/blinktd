@@ -13,10 +13,10 @@ ENV GOARCH="$GOARCH" \
     GOARM="$GOARM"
 
 RUN if [ "${GOARCH}" == "${GOHOSTARCH}" ]; then \
-		go build -v -o /go/bin/blinkt -a -installsuffix cgo \
+		go build -v -o /go/bin/blinktd -a -installsuffix cgo \
 		-ldflags "-linkmode external -extldflags \"-static\" -s -w "; \
 	else \
-		go build -v -o /go/bin/blinkt -ldflags "-s -w"; \
+		go build -v -o /go/bin/blinktd -ldflags "-s -w"; \
 	fi
 
 FROM scratch
@@ -29,6 +29,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.schema-version="1.0.0-rc1"
 
-COPY --from=builder /go/bin/blinkt /blinkt
+COPY --from=builder /go/bin/blinktd /blinktd
 
-ENTRYPOINT ["/blinkt", "serve"]
+ENTRYPOINT ["/blinktd"]
+CMD ["serve"]
